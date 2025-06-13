@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Olho Verde - Sistema Inteligente de Monitoramento</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #1b5e20;
+            --primary-light: #4caf50;
+            --primary-dark: #003300;
+            --secondary: #1565c0;
+            --accent: #ff5722;
+            --light: #f5f9f5;
+            --dark: #121f1c;
+            --warning: #ffc107;
+            --danger: #f44336;
+            --success: #4caf50;
+            --gray: #6c757d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+        }
+        
+        /* Header e Navegação */
+        header {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .navbar {
+            padding: 0.8rem 0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #4caf50 0%, #1b5e20 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .logo-text span {
+            color: #a5d6a7;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.85) !important;
+            font-weight: 500;
+            padding: 0.5rem 1.2rem !important;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            color: white !important;
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .nav-link i {
+            margin-right: 8px;
+        }
+        
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background-color: var(--accent);
+            border-radius: 50%;
+        }
+        
+        .btn-outline-light {
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 30px;
+            padding: 0.5rem 1.5rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .btn-outline-light:hover {
+            background: white;
+            color: var(--primary) !important;
+            border-color: white;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: url('https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?auto=format&fit=crop&w=1500&h=700') center/cover no-repeat;
+            padding: 7rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(27,94,32,0.9) 0%, rgba(33,115,38,0.85) 100%);
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 700px;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 2.5rem;
+            opacity: 0.9;
+        }
+        
+        .btn-hero {
+            background: var(--accent);
+            color: white;
+            font-weight: 600;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            border: none;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(255, 87, 34, 0.3);
+        }
+        
+        .btn-hero:hover {
+            background: #e64a19;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(255, 87, 34, 0.4);
+        }
+        
+        .stats-container {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-top: 3rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            opacity: 0.85;
+            color: white;
+        }
+        
+        /* Cards e Seções */
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: var(--primary-dark);
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+        
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+        
+        .section-title p {
+            color: var(--gray);
+            max-width: 700px;
+            margin: 1.5rem auto 0;
+            font-size: 1.1rem;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s ease;
+            margin-bottom: 2rem;
+            background: white;
+        }
+        
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 1.25rem 1.5rem;
+            border-bottom: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .card-body {
+            padding: 1.75rem;
+        }
+        
+        /* Sensores */
+        .sensor-card {
+            height: 100%;
+        }
+        
+        .sensor-icon {
+            width: 70px;
+            height: 70px;
+            background: var(--light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 1.75rem;
+            color: var(--primary);
+        }
+        
+        .sensor-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin: 0.5rem 0;
+            color: var(--dark);
+        }
+        
+        .sensor-label {
+            text-align: center;
+            color: var(--gray);
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .sensor-status {
+            display: inline-block;
+            padding: 0.35rem 1rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .status-normal {
+            background: rgba(76, 175, 80, 0.15);
+            color: var(--success);
+        }
+        
+        .status-warning {
+            background: rgba(255, 193, 7, 0.15);
+            color: var(--warning);
+        }
+        
+        .status-danger {
+            background: rgba(244, 67, 54, 0.15);
+            color: var(--danger);
+        }
+        
+        /* Alertas */
+        .alert-card {
+            border-left: 4px solid;
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: flex-start;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .alert-icon {
+            font-size: 1.75rem;
+            margin-right: 1.25rem;
+            min-width: 40px;
+        }
+        
+        .alert-warning {
+            border-left-color: var(--warning);
+        }
+        
+        .alert-warning .alert-icon {
+            color: var(--warning);
+        }
+        
+        .alert-danger {
+            border-left-color: var(--danger);
+        }
+        
+        .alert-danger .alert-icon {
+            color: var(--danger);
+        }
+        
+        .alert-content h5 {
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .alert-content p {
+            margin-bottom: 0.5rem;
+            color: var(--gray);
+        }
+        
+        .alert-time {
+            font-size: 0.85rem;
+            color: var(--gray);
+            opacity: 0.8;
+        }
+        
+        /* Mapa - Correção aplicada (estrutura original que funcionava) */
+        #map {
+            height: 500px;
+            border-radius: 12px;
+            z-index: 1;
+            width: 100%;
+        }
+        
+        .map-container {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .map-legend {
+            background: white;
+            padding: 1.25rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        
+        .legend-color {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin-right: 12px;
+        }
+        
+        .color-low { background: var(--success); }
+        .color-medium { background: var(--warning); }
+        .color-high { background: var(--danger); }
+        
+        /* Educação */
+        .education-card {
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+        }
+        
+        .education-img {
+            height: 200px;
+            width: 100%;
+            object-fit: cover;
+            transition: all 0.5s ease;
+        }
+        
+        .education-card:hover .education-img {
+            transform: scale(1.05);
+        }
+        
+        .education-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+            padding: 1.5rem;
+            color: white;
+        }
+        
+        .education-overlay h5 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Botão SOS */
+        .sos-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--danger) 0%, #d32f2f 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            box-shadow: 0 10px 25px rgba(244, 67, 54, 0.4);
+            z-index: 99;
+            animation: pulse 2s infinite;
+            border: none;
+            cursor: pointer;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(244, 67, 54, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0); }
+        }
+        
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            color: white;
+            padding: 4rem 0 2rem;
+            margin-top: 4rem;
+        }
+        
+        .footer-logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+        }
+        
+        .footer-logo span {
+            color: #a5d6a7;
+        }
+        
+        .footer-links h5 {
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.75rem;
+        }
+        
+        .footer-links h5::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--accent);
+        }
+        
+        .footer-links ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.75rem;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .social-icon:hover {
+            background: var(--accent);
+            transform: translateY(-5px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 3rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+        
+        /* Responsividade */
+        @media (max-width: 992px) {
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+            
+            .section-title h2 {
+                font-size: 2rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero {
+                padding: 5rem 0;
+            }
+            
+            .hero h1 {
+                font-size: 2.3rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+            
+            .nav-link {
+                padding: 0.5rem 1rem !important;
+                margin-bottom: 0.5rem;
+            }
+            
+            #map {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar navbar-expand-lg">
+                <div class="container-fluid">
+                    <a class="navbar-brand logo" href="#">
+                        <div class="logo-icon">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <div class="logo-text">Olho<span>Verde</span></div>
+                    </a>
+                    
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                        <span class="navbar-toggler-icon text-white"><i class="fas fa-bars"></i></span>
+                    </button>
+                    
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#"><i class="fas fa-home"></i> Início</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#dashboard"><i class="fas fa-chart-line"></i> Monitoramento</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#map-section"><i class="fas fa-map-marked-alt"></i> Mapa</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#alerts"><i class="fas fa-bell"></i> Alertas</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#education"><i class="fas fa-book"></i> Educação</a>
+                            </li>
+                        </ul>
+                        
+                        <div class="d-flex ms-lg-3">
+                            <button class="btn btn-outline-light">
+                                <i class="fas fa-sign-in-alt me-2"></i>Área Técnica
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="hero-content">
+                        <h1>Protegendo comunidades com tecnologia inteligente</h1>
+                        <p>O Olho Verde é um sistema avançado de monitoramento ambiental que previne desastres e protege vidas através de alertas em tempo real e educação comunitária.</p>
+                        <button class="btn btn-hero">
+                            <i class="fas fa-download me-2"></i>Baixe o App
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-5">
+                <div class="col">
+                    <div class="stats-container">
+                        <div class="row text-center">
+                            <div class="col-md-3">
+                                <div class="stat-item">
+                                    <div class="stat-number">42</div>
+                                    <div class="stat-label">Sensores Ativos</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-item">
+                                    <div class="stat-number">18</div>
+                                    <div class="stat-label">Alertas Prevenidos</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-item">
+                                    <div class="stat-number">7</div>
+                                    <div class="stat-label">Comunidades Protegidas</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-item">
+                                    <div class="stat-number">24/7</div>
+                                    <div class="stat-label">Monitoramento Contínuo</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard de Sensores -->
+    <section id="dashboard" class="py-6 bg-light">
+        <div class="container">
+            <div class="section-title">
+                <h2>Monitoramento em Tempo Real</h2>
+                <p>Dados coletados pelos nossos sensores espalhados em áreas de risco</p>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="card sensor-card">
+                        <div class="card-header text-center">
+                            <i class="fas fa-cloud-rain me-2"></i>Nível de Chuva
+                        </div>
+                        <div class="card-body text-center">
+                            <div class="sensor-icon">
+                                <i class="fas fa-tint"></i>
+                            </div>
+                            <div class="sensor-value">28.4mm</div>
+                            <div class="sensor-label">Últimas 3 horas</div>
+                            <div class="sensor-status status-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>Moderado
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="card sensor-card">
+                        <div class="card-header text-center">
+                            <i class="fas fa-thermometer-half me-2"></i>Temperatura
+                        </div>
+                        <div class="card-body text-center">
+                            <div class="sensor-icon">
+                                <i class="fas fa-sun"></i>
+                            </div>
+                            <div class="sensor-value">31.2°C</div>
+                            <div class="sensor-label">Máxima hoje</div>
+                            <div class="sensor-status status-normal">
+                                <i class="fas fa-check-circle me-2"></i>Normal
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="card sensor-card">
+                        <div class="card-header text-center">
+                            <i class="fas fa-water me-2"></i>Umidade
+                        </div>
+                        <div class="card-body text-center">
+                            <div class="sensor-icon">
+                                <i class="fas fa-humidity"></i>
+                            </div>
+                            <div class="sensor-value">78%</div>
+                            <div class="sensor-label">Umidade Relativa</div>
+                            <div class="sensor-status status-normal">
+                                <i class="fas fa-check-circle me-2"></i>Normal
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="card sensor-card">
+                        <div class="card-header text-center">
+                            <i class="fas fa-bolt me-2"></i>Tensão Elétrica
+                        </div>
+                        <div class="card-body text-center">
+                            <div class="sensor-icon">
+                                <i class="fas fa-plug"></i>
+                            </div>
+                            <div class="sensor-value">235V</div>
+                            <div class="sensor-label">Rede Principal</div>
+                            <div class="sensor-status status-danger">
+                                <i class="fas fa-exclamation-circle me-2"></i>Alerta
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-chart-area me-2"></i>Histórico de Chuvas
+                        </div>
+                        <div class="card-body">
+                            <canvas id="rain-chart" height="250"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-map-marked-alt me-2"></i>Áreas de Risco
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-3">
+                                <div>
+                                    <h5 class="mb-0">Alto Risco</h5>
+                                    <span class="text-danger">3 áreas</span>
+                                </div>
+                                <div class="text-end">
+                                    <h5 class="mb-0">Moderado</h5>
+                                    <span class="text-warning">5 áreas</span>
+                                </div>
+                            </div>
+                            <div class="progress mb-4" style="height: 12px;">
+                                <div class="progress-bar bg-danger" style="width: 25%"></div>
+                                <div class="progress-bar bg-warning" style="width: 45%"></div>
+                                <div class="progress-bar bg-success" style="width: 30%"></div>
+                            </div>
+                            
+                            <div class="list-group">
+                                <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                    Sambizanga
+                                    <span class="badge bg-danger rounded-pill">Alto</span>
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                    Rangel
+                                    <span class="badge bg-warning rounded-pill">Moderado</span>
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                    Kilamba
+                                    <span class="badge bg-success rounded-pill">Baixo</span>
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                    Maianga
+                                    <span class="badge bg-danger rounded-pill">Alto</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mapa Interativo - Correção aplicada (estrutura original) -->
+    <section id="map-section" class="py-6">
+        <div class="container">
+            <div class="section-title">
+                <h2>Mapa de Monitoramento</h2>
+                <p>Visualize em tempo real as áreas monitoradas e os níveis de risco</p>
+            </div>
+            
+            <div class="map-container">
+                <div id="map"></div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="map-legend">
+                        <h5 class="mb-3"><i class="fas fa-map-legend me-2"></i>Legenda do Mapa</h5>
+                        
+                        <div class="legend-item">
+                            <div class="legend-color color-high"></div>
+                            <div>Alto Risco - Ação imediata necessária</div>
+                        </div>
+                        
+                        <div class="legend-item">
+                            <div class="legend-color color-medium"></div>
+                            <div>Risco Moderado - Atenção necessária</div>
+                        </div>
+                        
+                        <div class="legend-item">
+                            <div class="legend-color color-low"></div>
+                            <div>Baixo Risco - Situação normal</div>
+                        </div>
+                        
+                        <hr class="my-3">
+                        
+                        <div class="legend-item">
+                            <i class="fas fa-bolt text-warning me-3" style="font-size: 1.5rem;"></i>
+                            <div>Sensores Elétricos</div>
+                        </div>
+                        
+                        <div class="legend-item">
+                            <i class="fas fa-cloud-rain text-info me-3" style="font-size: 1.5rem;"></i>
+                            <div>Sensores Climáticos</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Alertas Recentes
+                        </div>
+                        <div class="card-body">
+                            <div class="alert-card alert-danger">
+                                <div class="alert-icon">
+                                    <i class="fas fa-bolt"></i>
+                                </div>
+                                <div class="alert-content">
+                                    <h5>Sobrecarga Elétrica</h5>
+                                    <p>Zona Industrial - Rede principal</p>
+                                    <div class="alert-time">Há 15 minutos</div>
+                                </div>
+                            </div>
+                            
+                            <div class="alert-card alert-warning">
+                                <div class="alert-icon">
+                                    <i class="fas fa-cloud-rain"></i>
+                                </div>
+                                <div class="alert-content">
+                                    <h5>Chuva Intensa</h5>
+                                    <p>Sambizanga - 45mm nas últimas 2h</p>
+                                    <div class="alert-time">Há 2 horas</div>
+                                </div>
+                            </div>
+                            
+                            <a href="#" class="btn btn-outline-primary w-100 mt-2">
+                                <i class="fas fa-bell me-2"></i>Configurar Alertas
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Alertas -->
+    <section id="alerts" class="py-6 bg-light">
+        <div class="container">
+            <div class="section-title">
+                <h2>Sistema de Alertas</h2>
+                <p>Receba notificações em tempo real sobre eventos climáticos e riscos elétricos</p>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <i class="fas fa-sliders-h me-2"></i>Configurar Alertas
+                        </div>
+                        <div class="card-body">
+                            <form>
+                                <div class="mb-3">
+                                    <label class="form-label">Área de Interesse</label>
+                                    <select class="form-select">
+                                        <option>Todas as áreas</option>
+                                        <option selected>Sambizanga</option>
+                                        <option>Rangel</option>
+                                        <option>Kilamba</option>
+                                        <option>Maianga</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Tipo de Alerta</label>
+                                    <select class="form-select">
+                                        <option>Todos os alertas</option>
+                                        <option selected>Chuvas Intensas</option>
+                                        <option>Riscos Elétricos</option>
+                                        <option>Inundações</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Método de Recebimento</label>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" checked>
+                                        <label class="form-check-label">Notificação no App</label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox">
+                                        <label class="form-check-label">SMS</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox">
+                                        <label class="form-check-label">E-mail</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="form-label">Nível de Sensibilidade</label>
+                                    <input type="range" class="form-range" min="1" max="3" value="2">
+                                    <div class="d-flex justify-content-between">
+                                        <small>Baixa</small>
+                                        <small>Média</small>
+                                        <small>Alta</small>
+                                    </div>
+                                </div>
+                                
+                                <button class="btn btn-primary w-100">
+                                    <i class="fas fa-save me-2"></i>Salvar Configurações
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <i class="fas fa-history me-2"></i>Histórico de Alertas
+                        </div>
+                        <div class="card-body">
+                            <div class="alert-card alert-danger">
+                                <div class="alert-icon">
+                                    <i class="fas fa-bolt"></i>
+                                </div>
+                                <div class="alert-content">
+                                    <h5>Falha Elétrica Grave</h5>
+                                    <p>Zona Industrial - Risco de curto-circuito</p>
+                                    <div class="alert-time">Hoje, 14:30</div>
+                                </div>
+                            </div>
+                            
+                            <div class="alert-card alert-warning">
+                                <div class="alert-icon">
+                                    <i class="fas fa-cloud-showers-heavy"></i>
+                                </div>
+                                <div class="alert-content">
+                                    <h5>Previsão de Chuva Forte</h5>
+                                    <p>Sambizanga - Prepare-se para chuvas intensas</p>
+                                    <div class="alert-time">Ontem, 18:45</div>
+                                </div>
+                            </div>
+                            
+                            <div class="alert-card">
+                                <div class="alert-icon">
+                                    <i class="fas fa-info-circle text-primary"></i>
+                                </div>
+                                <div class="alert-content">
+                                    <h5>Manutenção Programada</h5>
+                                    <p>Sensores da região de Rangel</p>
+                                    <div class="alert-time">12 Jun, 10:00</div>
+                                </div>
+                            </div>
+                            
+                            <div class="alert-card alert-warning">
+                                <div class="alert-icon">
+                                    <i class="fas fa-tint"></i>
+                                </div>
+                                <div class="alert-content">
+                                    <h5>Nível de Chuva Elevado</h5>
+                                    <p>Maianga - 65mm nas últimas 24h</p>
+                                    <div class="alert-time">10 Jun, 08:15</div>
+                                </div>
+                            </div>
+                            
+                            <a href="#" class="btn btn-outline-secondary w-100 mt-2">
+                                <i class="fas fa-list me-2"></i>Ver Histórico Completo
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Educação Ambiental -->
+    <section id="education" class="py-6">
+        <div class="container">
+            <div class="section-title">
+                <h2>Educação Ambiental</h2>
+                <p>Aprenda sobre mudanças climáticas, segurança e prevenção de desastres</p>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card education-card">
+                        <img src="https://images.unsplash.com/photo-1564053489984-317bbd824340?auto=format&fit=crop&w=600&h=300" class="education-img" alt="Prevenção de Inundações">
+                        <div class="education-overlay">
+                            <h5>Prevenção de Inundações</h5>
+                            <p class="d-none d-md-block">Proteja sua casa e família durante períodos de chuva intensa</p>
+                            <a href="#" class="btn btn-sm btn-success mt-2">
+                                <i class="fas fa-book-reader me-1"></i> Ler Artigo
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 mb-4">
+                    <div class="card education-card">
+                        <img src="https://images.unsplash.com/photo-1581091226033-d5c48150dbaa?auto=format&fit=crop&w=600&h=300" class="education-img" alt="Segurança Elétrica">
+                        <div class="education-overlay">
+                            <h5>Segurança Elétrica em Casa</h5>
+                            <p class="d-none d-md-block">Evite acidentes com eletricidade durante tempestades</p>
+                            <a href="#" class="btn btn-sm btn-success mt-2">
+                                <i class="fas fa-book-reader me-1"></i> Ler Artigo
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 mb-4">
+                    <div class="card education-card">
+                        <img src="https://images.unsplash.com/photo-1466611653911-95081537e5b7?auto=format&fit=crop&w=600&h=300" class="education-img" alt="Mudanças Climáticas">
+                        <div class="education-overlay">
+                            <h5>Mudanças Climáticas em Angola</h5>
+                            <p class="d-none d-md-block">Como as alterações climáticas estão afetando nosso país</p>
+                            <a href="#" class="btn btn-sm btn-success mt-2">
+                                <i class="fas fa-book-reader me-1"></i> Ler Artigo
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-md-8 mx-auto text-center">
+                    <div class="card py-4">
+                        <h4 class="mb-3">Participe do Nosso Programa Educativo</h4>
+                        <p class="px-4">Junte-se a workshops comunitários e torne-se um agente de mudança ambiental em sua região</p>
+                        <button class="btn btn-primary mx-auto mt-2">
+                            <i class="fas fa-user-graduate me-2"></i>Inscreva-se Agora
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Botão SOS -->
+    <button class="sos-btn" data-bs-toggle="modal" data-bs-target="#sosModal">
+        <i class="fas fa-exclamation-triangle"></i>
+    </button>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <div class="footer-logo">Olho<span>Verde</span></div>
+                    <p>Sistema Inteligente de Alerta e Monitoramento Ambiental protegendo comunidades urbanas em Angola.</p>
+                    
+                    <div class="social-icons">
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
+                    <div class="footer-links">
+                        <h5>Links Rápidos</h5>
+                        <ul>
+                            <li><a href="#"><i class="fas fa-chevron-right me-2"></i>Início</a></li>
+                            <li><a href="#dashboard"><i class="fas fa-chevron-right me-2"></i>Monitoramento</a></li>
+                            <li><a href="#map-section"><i class="fas fa-chevron-right me-2"></i>Mapa</a></li>
+                            <li><a href="#alerts"><i class="fas fa-chevron-right me-2"></i>Alertas</a></li>
+                            <li><a href="#education"><i class="fas fa-chevron-right me-2"></i>Educação</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-4 mb-4 mb-md-0">
+                    <div class="footer-links">
+                        <h5>Recursos</h5>
+                        <ul>
+                            <li><a href="#"><i class="fas fa-chevron-right me-2"></i>Documentação</a></li>
+                            <li><a href="#"><i class="fas fa-chevron-right me-2"></i>Relatórios Anuais</a></li>
+                            <li><a href="#"><i class="fas fa-chevron-right me-2"></i>FAQ</a></li>
+                            <li><a href="#"><i class="fas fa-chevron-right me-2"></i>Política de Privacidade</a></li>
+                            <li><a href="#"><i class="fas fa-chevron-right me-2"></i>Termos de Uso</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-4">
+                    <div class="footer-links">
+                        <h5>Contato</h5>
+                        <ul>
+                            <li><i class="fas fa-map-marker-alt me-2"></i> Luanda, Angola</li>
+                            <li><i class="fas fa-phone me-2"></i> +244 123 456 789</li>
+                            <li><i class="fas fa-envelope me-2"></i> suporte@olhoverde.ao</li>
+                            <li><i class="fas fa-headset me-2"></i> Suporte 24/7</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2023 Projeto Olho Verde. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal SOS -->
+    <div class="modal fade" id="sosModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Reportar Emergência</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de Emergência</label>
+                        <select class="form-select">
+                            <option>Inundação</option>
+                            <option>Acidente Elétrico</option>
+                            <option>Deslizamento de Terra</option>
+                            <option>Outro</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Localização</label>
+                        <input type="text" class="form-control" placeholder="Descreva sua localização">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Detalhes</label>
+                        <textarea class="form-control" rows="3" placeholder="Forneça mais informações"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Enviar foto (opcional)</label>
+                        <input type="file" class="form-control">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger">Enviar Alerta SOS</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        // Inicialização do Mapa - Correção aplicada
+        const map = L.map('map').setView([-8.8383, 13.2344], 12);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        
+        // Adicionando marcadores de sensores
+        const sensors = [
+            {lat: -8.8383, lng: 13.2344, type: 'rain', name: 'Sambizanga', status: 'high'},
+            {lat: -8.8147, lng: 13.2300, type: 'electric', name: 'Maianga', status: 'medium'},
+            {lat: -8.8583, lng: 13.2444, type: 'rain', name: 'Rangel', status: 'low'},
+            {lat: -8.8233, lng: 13.2684, type: 'electric', name: 'Kilamba', status: 'high'},
+            {lat: -8.8320, lng: 13.2420, type: 'rain', name: 'Ingombota', status: 'medium'},
+            {lat: -8.8470, lng: 13.2600, type: 'electric', name: 'Cazenga', status: 'normal'}
+        ];
+        
+        sensors.forEach(sensor => {
+            const iconType = sensor.type === 'rain' ? 'cloud-rain' : 'bolt';
+            const statusColor = sensor.status === 'high' ? 'red' : 
+                               sensor.status === 'medium' ? 'orange' : 'green';
+            
+            const marker = L.marker([sensor.lat, sensor.lng], {
+                icon: L.divIcon({
+                    html: `<i class="fas fa-${iconType}" style="color: ${statusColor}; font-size: 24px; text-shadow: 0 0 8px white;"></i>`,
+                    className: '',
+                    iconSize: [30, 30]
+                })
+            }).addTo(map);
+            
+            marker.bindPopup(`
+                <b>${sensor.name}</b><br>
+                Tipo: ${sensor.type === 'rain' ? 'Climático' : 'Elétrico'}<br>
+                Status: <span class="text-${sensor.status === 'high' ? 'danger' : 
+                                      sensor.status === 'medium' ? 'warning' : 'success'}">
+                        ${sensor.status === 'high' ? 'Alto Risco' : 
+                         sensor.status === 'medium' ? 'Risco Moderado' : 'Baixo Risco'}
+                        </span>
+            `);
+        });
+        
+        // Adicionando zonas de risco
+        const riskZone1 = L.polygon([
+            [-8.83, 13.22],
+            [-8.82, 13.24],
+            [-8.84, 13.26]
+        ], {color: 'red', fillColor: '#ff0000', fillOpacity: 0.1}).addTo(map);
+        
+        riskZone1.bindPopup('<b>Zona de Alto Risco</b><br>Área sujeita a inundações frequentes');
+        
+        const riskZone2 = L.polygon([
+            [-8.85, 13.25],
+            [-8.84, 13.27],
+            [-8.845, 13.29]
+        ], {color: 'orange', fillColor: '#ff9800', fillOpacity: 0.1}).addTo(map);
+        
+        riskZone2.bindPopup('<b>Zona de Risco Moderado</b><br>Área com histórico de alagamentos');
+        
+        // Gráfico de chuvas
+        const rainCtx = document.getElementById('rain-chart').getContext('2d');
+        const rainChart = new Chart(rainCtx, {
+            type: 'line',
+            data: {
+                labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+                datasets: [{
+                    label: 'Precipitação (mm)',
+                    data: [12, 19, 8, 24, 16, 42, 35],
+                    borderColor: '#1565c0',
+                    backgroundColor: 'rgba(21, 101, 192, 0.1)',
+                    borderWidth: 3,
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Simulação de dados em tempo real
+        function updateSensorData() {
+            const rainValue = (15 + Math.random() * 35).toFixed(1);
+            document.querySelector('.sensor-card:nth-child(1) .sensor-value').textContent = rainValue + 'mm';
+            
+            const tempValue = (28 + Math.random() * 5).toFixed(1);
+            document.querySelector('.sensor-card:nth-child(2) .sensor-value').textContent = tempValue + '°C';
+            
+            const humidityValue = Math.round(60 + Math.random() * 30);
+            document.querySelector('.sensor-card:nth-child(3) .sensor-value').textContent = humidityValue + '%';
+            
+            const voltageValue = Math.round(200 + Math.random() * 50);
+            document.querySelector('.sensor-card:nth-child(4) .sensor-value').textContent = voltageValue + 'V';
+            
+            // Atualizar status baseado nos valores
+            updateStatus(rainValue, 30, 40, '.sensor-card:nth-child(1) .sensor-status');
+            updateStatus(voltageValue, 230, 240, '.sensor-card:nth-child(4) .sensor-status');
+        }
+        
+        function updateStatus(value, warnThreshold, dangerThreshold, selector) {
+            const element = document.querySelector(selector);
+            
+            if (value >= dangerThreshold) {
+                element.className = 'sensor-status status-danger';
+                element.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>Alerta';
+            } else if (value >= warnThreshold) {
+                element.className = 'sensor-status status-warning';
+                element.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Moderado';
+            } else {
+                element.className = 'sensor-status status-normal';
+                element.innerHTML = '<i class="fas fa-check-circle me-2"></i>Normal';
+            }
+        }
+        
+        // Atualizar dados a cada 5 segundos
+        setInterval(updateSensorData, 5000);
+        updateSensorData(); // Inicialização
+        
+        // Scroll suave
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
